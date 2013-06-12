@@ -1,0 +1,30 @@
+{
+  "name": "uglifyify",
+  "version": "0.0.1",
+  "description": "A browserify transform which minifies your code using UglifyJS2",
+  "main": "index.js",
+  "dependencies": {
+    "uglify-js": "~1.3.4",
+    "through": "~2.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hughsk/uglifyify.git"
+  },
+  "keywords": [
+    "uglify",
+    "minify",
+    "compress",
+    "compile",
+    "browserify",
+    "transform",
+    "stream"
+  ],
+  "author": "Hugh Kennedy <hughskennedy@gmail.com> (http://hughskennedy.com/)",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
