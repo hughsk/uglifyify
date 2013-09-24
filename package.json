@@ -1,6 +1,6 @@
 {
   "name": "uglifyify",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A browserify transform which minifies your code using UglifyJS2",
   "main": "index.js",
   "dependencies": {
