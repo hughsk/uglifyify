@@ -1,6 +1,5 @@
 var through = require('through')
-  , jsp = require('uglify-js').parser
-  , pro = require('uglify-js').uglify
+  , ujs = require('uglify-js')
 
 module.exports = uglifyify
 function uglifyify(file) {
@@ -11,12 +10,13 @@ function uglifyify(file) {
   return through(function write(chunk) {
     buffer += chunk
   }, function ready() {
-    var ast = jsp.parse(buffer)
+    buffer = ujs.minify(buffer, {
+        fromString: true
+      , compress: true
+      , mangle: true
+    })
 
-    ast = pro.ast_mangle(ast)
-    ast = pro.ast_squeeze(ast)
-
-    this.queue(pro.gen_code(ast))
+    this.queue(buffer.code)
     this.queue(null)
   })
 }
