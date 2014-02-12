@@ -10,7 +10,7 @@ function uglifyify(file) {
 
   return through(function write(chunk) {
     buffer += chunk
-  }, function ready() {
+  }, capture(function ready() {
     var opts = {
       fromString: true
       , compress: true
@@ -42,5 +42,15 @@ function uglifyify(file) {
     }
 
     this.queue(null)
-  })
+  }))
+
+  function capture(fn) {
+    return function() {
+      try {
+        fn.apply(this, arguments)
+      } catch(err) {
+        return this.emit('error', err)
+      }
+    }
+  }
 }
