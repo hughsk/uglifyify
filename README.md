@@ -53,3 +53,35 @@ NODE_ENV=production browserify -t envify -t uglifyify index.js -o prod.js
 It should go without saying that you should be hesitant using environment
 variables in a Browserify module - this is best suited to your own
 applications or modules built with Browserify's `--standalone` tag.
+
+## Global Transforms
+
+You might also want to take advantage of uglifyify's pre-bundle minification
+to produce slightly leaner files across your entire browserify bundle. By
+default, transforms only alter your application code, but you can use global
+transforms to minify module code too. From your terminal:
+
+``` bash
+browserify -g uglifyify ./index.js > bundle.js
+```
+
+Or programatically:
+
+``` bash
+var browserify = require('browserify')
+var fs = require('fs')
+
+var bundler = browserify(__dirname + '/index.js')
+
+bundler.transform({
+  global: true
+}, 'uglifyify')
+
+bundler.bundle()
+  .pipe(fs.createWriteStream(__dirname + '/bundle.js'))
+```
+
+Not that this is fine for uglifyify as it shouldn't modify the behavior of
+your code unexpectedly, but transforms such as envify should almost always
+stay local – otherwise you'll run into unexpected side-effects within modules
+that weren't expecting to be modified as such.
