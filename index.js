@@ -6,7 +6,7 @@ module.exports = uglifyify
 function uglifyify(file) {
   var buffer = ''
 
-  if (!/(?:\.js|\.coffee|\.eco|\.hbs|\.jsx)$/.test(file)) return through()
+  if (/\.json$/.test(file)) return through()
 
   return through(function write(chunk) {
     buffer += chunk
