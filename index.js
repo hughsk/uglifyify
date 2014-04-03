@@ -1,12 +1,13 @@
 var convert = require('convert-source-map')
   , through = require('through')
+  , path = require('path')
   , ujs = require('uglify-js')
 
 module.exports = uglifyify
-function uglifyify(file) {
+function uglifyify(file, opts) {
   var buffer = ''
 
-  if (/\.json$/.test(file)) return through()
+  if (/\.json$/.test(file) || opts && opts.exts && opts.exts.indexOf(path.extname(file)) === -1) return through()
 
   return through(function write(chunk) {
     buffer += chunk
