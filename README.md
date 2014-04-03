@@ -54,6 +54,23 @@ It should go without saying that you should be hesitant using environment
 variables in a Browserify module - this is best suited to your own
 applications or modules built with Browserify's `--standalone` tag.
 
+## File Extensions
+
+Sometimes, you don't want uglifyify to minify all of your files – for example,
+if you're using a transform to `require` CSS or HTML, you might get an error
+as uglify expects JavaScript and will throw if it can't parse what it's given.
+
+This is done using the `-x` or `--exts` transform options, e.g. from the
+command-line:
+
+``` bash
+browserify     \
+  -t coffeeify \
+  -t [ uglifyify -x .js -x .coffee ]
+```
+
+The above example will only minify `.js` and `.coffee` files, ignoring the rest.
+
 ## Global Transforms
 
 You might also want to take advantage of uglifyify's pre-bundle minification
