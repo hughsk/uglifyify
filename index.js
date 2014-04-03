@@ -5,9 +5,16 @@ var convert = require('convert-source-map')
 
 module.exports = uglifyify
 function uglifyify(file, opts) {
-  var buffer = ''
+  opts = opts || {}
 
-  if (/\.json$/.test(file) || opts && opts.exts && opts.exts.indexOf(path.extname(file)) === -1) return through()
+  var buffer = ''
+  var exts = []
+    .concat(opts.exts || [])
+    .concat(opts.x || [])
+
+  if (/\.json$/.test(file) || exts.indexOf(path.extname(file)) === -1) {
+    return through()
+  }
 
   return through(function write(chunk) {
     buffer += chunk
