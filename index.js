@@ -12,7 +12,11 @@ function uglifyify(file, opts) {
     .concat(opts.exts || [])
     .concat(opts.x || [])
 
-  if (/\.json$/.test(file) || exts.indexOf(path.extname(file)) === -1) {
+  if (
+    /\.json$/.test(file) ||
+    exts.length &&
+    exts.indexOf(path.extname(file)) === -1
+  ) {
     return through()
   }
 
