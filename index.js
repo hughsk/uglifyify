@@ -2,6 +2,7 @@ var convert = require('convert-source-map')
   , through = require('through')
   , path = require('path')
   , ujs = require('uglify-js')
+  , extend = require('extend')
 
 module.exports = uglifyify
 function uglifyify(file, opts) {
@@ -23,11 +24,11 @@ function uglifyify(file, opts) {
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
-    var opts = {
+    opts = extend({}, {
       fromString: true
       , compress: true
       , mangle: true
-    }
+    }, opts)
 
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
