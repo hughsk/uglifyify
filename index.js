@@ -5,6 +5,7 @@ var convert = require('convert-source-map')
   , extend = require('extend')
 
 module.exports = uglifyify
+
 function uglifyify(file, opts) {
   opts = opts || {}
 
@@ -33,23 +34,25 @@ function uglifyify(file, opts) {
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
     var sourceMaps = buffer.match(
-      /\/\/[#@] sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
+      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
     )
 
-    if (sourceMaps) {
-      opts.outSourceMap = 'out.js.map'
-      opts.inSourceMap = convert.fromJSON(
-        new Buffer(sourceMaps[1], 'base64').toString()
-      ).sourcemap
-    }
+    opts.outSourceMap = 'out.js.map'
+    opts.inSourceMap = sourceMaps && convert.fromJSON(
+      new Buffer(sourceMaps[1], 'base64').toString()
+    ).sourcemap
 
-    buffer = ujs.minify(buffer, opts)
-    this.queue(buffer.code)
+    var min = ujs.minify(buffer, opts)
+    this.queue(min.code)
 
-    if (sourceMaps) {
-      var map = convert.fromJSON(buffer.map)
+    if (min.map) {
+      var map = convert.fromJSON(min.map)
       map.setProperty('sources', [file])
-      map.setProperty('sourcesContent', opts.inSourceMap.sourcesContent)
+      map.setProperty('sourcesContent', sourceMaps
+        ? opts.inSourceMap.sourcesContent
+        : [buffer]
+      )
+
       this.queue('\n')
       this.queue(map.toComment())
     }
