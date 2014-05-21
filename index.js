@@ -1,4 +1,5 @@
-var convert = require('convert-source-map')
+var minimatch = require('minimatch').Minimatch
+  , convert = require('convert-source-map')
   , through = require('through')
   , path = require('path')
   , ujs = require('uglify-js')
@@ -8,6 +9,10 @@ module.exports = uglifyify
 
 function uglifyify(file, opts) {
   opts = opts || {}
+
+  if (ignore(file, opts.ignore)) {
+    return through()
+  }
 
   var buffer = ''
   var exts = []
@@ -69,4 +74,15 @@ function uglifyify(file, opts) {
       }
     }
   }
+}
+
+function ignore(file, list) {
+  if (!list) return
+
+  list = Array.isArray(list) ? list : [list]
+
+  return list.some(function(pattern) {
+    var match = minimatch(pattern)
+    return match.match(file)
+  })
 }

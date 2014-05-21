@@ -98,7 +98,32 @@ bundler.bundle()
   .pipe(fs.createWriteStream(__dirname + '/bundle.js'))
 ```
 
-Not that this is fine for uglifyify as it shouldn't modify the behavior of
+Note that this is fine for uglifyify as it shouldn't modify the behavior of
 your code unexpectedly, but transforms such as envify should almost always
 stay local – otherwise you'll run into unexpected side-effects within modules
 that weren't expecting to be modified as such.
+
+## Ignoring Files
+
+Sometimes uglifyjs will break specific files under specific settings – it's
+rare, but does happen – and to work around that, you can use the `ignore`
+option. Given one or more glob patterns, you can filter out specific files
+this way:
+
+``` bash
+browserify -g [ uglifyify --ignore '**/node_modules/weakmap/*' ] ./index.js
+```
+
+``` javascript
+var bundler = browserify('index.js')
+
+bundler.transform({
+    global: true
+  , ignore: [
+      '**/node_modules/weakmap/*'
+    , '**/node_modules/async/*'
+  ]
+}, 'uglifyify')
+
+bundler.bundle().pipe(process.stdout)
+```

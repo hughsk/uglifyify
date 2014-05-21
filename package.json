@@ -4,10 +4,11 @@
   "description": "A browserify transform which minifies your code using UglifyJS2",
   "main": "index.js",
   "dependencies": {
-    "uglify-js": "2.x.x",
-    "through": "~2.3.4",
     "convert-source-map": "~0.2.3",
-    "extend": "^1.2.1"
+    "extend": "^1.2.1",
+    "minimatch": "^0.3.0",
+    "through": "~2.3.4",
+    "uglify-js": "2.x.x"
   },
   "devDependencies": {},
   "scripts": {
