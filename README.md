@@ -84,7 +84,7 @@ browserify -g uglifyify ./index.js > bundle.js
 
 Or programatically:
 
-``` bash
+``` javascript
 var browserify = require('browserify')
 var fs = require('fs')
 
