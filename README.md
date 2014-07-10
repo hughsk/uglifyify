@@ -1,7 +1,7 @@
 # uglifyify
 
 A [Browserify](http://browserify.org) v2 transform which minifies your code
-using [UglifyJS2](https://github.com/mishoo/UglifyJS).
+using [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
 ## Installation
 
