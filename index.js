@@ -42,15 +42,17 @@ function uglifyify(file, opts) {
       /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
     )
 
-    opts.outSourceMap = 'out.js.map'
-    opts.inSourceMap = sourceMaps && convert.fromJSON(
-      new Buffer(sourceMaps[1], 'base64').toString()
-    ).sourcemap
+    if(sourceMaps) {
+      opts.outSourceMap = 'out.js.map'
+      opts.inSourceMap = sourceMaps && convert.fromJSON(
+        new Buffer(sourceMaps[1], 'base64').toString()
+      ).sourcemap
+    }
 
     var min = ujs.minify(buffer, opts)
     this.queue(min.code)
 
-    if (min.map) {
+    if (sourceMaps) {
       var map = convert.fromJSON(min.map)
       map.setProperty('sources', [file])
       map.setProperty('sourcesContent', sourceMaps
