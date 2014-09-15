@@ -34,19 +34,23 @@ function uglifyify(file, opts) {
       fromString: true
       , compress: true
       , mangle: true
+      , sourceMaps: true
     }, opts)
 
-    // Check if incoming source code already has source map comment.
-    // If so, send it in to ujs.minify as the inSourceMap parameter
-    var sourceMaps = buffer.match(
-      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
-    )
+    if(opts.sourceMaps) {
+      // Check if incoming source code already has source map comment.
+      // If so, send it in to ujs.minify as the inSourceMap parameter
+      var sourceMaps = buffer.match(
+        /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
+      )
 
-    if(sourceMaps) {
-      opts.outSourceMap = 'out.js.map'
-      opts.inSourceMap = sourceMaps && convert.fromJSON(
-        new Buffer(sourceMaps[1], 'base64').toString()
-      ).sourcemap
+
+      if(sourceMaps) {
+        opts.outSourceMap = 'out.js.map'
+        opts.inSourceMap = sourceMaps && convert.fromJSON(
+          new Buffer(sourceMaps[1], 'base64').toString()
+        ).sourcemap
+      }
     }
 
     var min = ujs.minify(buffer, opts)
