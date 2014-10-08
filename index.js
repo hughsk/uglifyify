@@ -34,6 +34,7 @@ function uglifyify(file, opts) {
       fromString: true
       , compress: true
       , mangle: true
+      , filename: file
     }, opts)
 
     // Check if incoming source code already has source map comment.
