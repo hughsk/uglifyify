@@ -36,6 +36,10 @@ function uglifyify(file, opts) {
       , mangle: true
     }, opts)
 
+    if (typeof opts.compress === 'object') {
+      delete opts.compress._
+    }
+
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
     var sourceMaps = buffer.match(
