@@ -56,7 +56,7 @@ function uglifyify(file, opts) {
     var min = ujs.minify(buffer, opts)
     this.queue(min.code)
 
-    if (sourceMaps) {
+    if (min.map) {
       var map = convert.fromJSON(min.map)
       map.setProperty('sources', [file])
       map.setProperty('sourcesContent', sourceMaps
