@@ -34,29 +34,34 @@ function uglifyify(file, opts) {
       fromString: true
       , compress: true
       , mangle: true
+      , filename: file
+      , sourceMaps: true
     }, opts)
 
     if (typeof opts.compress === 'object') {
       delete opts.compress._
     }
 
-    // Check if incoming source code already has source map comment.
-    // If so, send it in to ujs.minify as the inSourceMap parameter
-    var sourceMaps = buffer.match(
-      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
-    )
+    var sourceMaps;
+    if(opts.sourceMaps) {
+      // Check if incoming source code already has source map comment.
+      // If so, send it in to ujs.minify as the inSourceMap parameter
+      sourceMaps = buffer.match(
+        /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
+      )
 
-    if(sourceMaps) {
       opts.outSourceMap = 'out.js.map'
-      opts.inSourceMap = sourceMaps && convert.fromJSON(
-        new Buffer(sourceMaps[1], 'base64').toString()
-      ).sourcemap
+      if(sourceMaps) {
+        opts.inSourceMap = sourceMaps && convert.fromJSON(
+          new Buffer(sourceMaps[1], 'base64').toString()
+        ).sourcemap
+      }
     }
 
     var min = ujs.minify(buffer, opts)
     this.queue(min.code)
 
-    if (sourceMaps) {
+    if (min.map) {
       var map = convert.fromJSON(min.map)
       map.setProperty('sources', [file])
       map.setProperty('sourcesContent', sourceMaps
