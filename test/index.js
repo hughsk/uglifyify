@@ -106,7 +106,7 @@ function closure() {
   return wrap('(function(){', '})()')
 }
 
-test.only('uglifyify: sourcemaps', function(t) {
+test('uglifyify: sourcemaps', function(t) {
   t.plan(10)
 
   var src  = path.join(__dirname, 'fixture.js')
