@@ -1,4 +1,7 @@
+const convert   = require('convert-source-map')
 const wrap      = require('wrap-stream')
+const uglify    = require('uglify-js')
+const from2     = require('from2')
 const test      = require('tape')
 const path      = require('path')
 const uglifyify = require('../')
@@ -96,6 +99,48 @@ test('uglifyify: passes options to uglify', function(t) {
   }
 })
 
+
+
 function closure() {
   return wrap('(function(){', '})()')
 }
+
+test('uglifyify: sourcemaps', function(t) {
+  t.plan(4)
+
+  var src  = path.join(__dirname, 'fixture.js')
+  var json = path.join(__dirname, 'fixture.json')
+  var orig = fs.readFileSync(src, 'utf8')
+  var min  = uglify.minify(orig, {
+    outSourceMap: 'out.js.map'
+    , fromString: true
+  })
+
+  var map = convert.fromJSON(min.map)
+  map.setProperty('sources', [src])
+  map.setProperty('sourcesContent', [orig])
+
+  var mapped = [orig, map.toComment()].join('\n')
+
+  from2([mapped])
+    .pipe(uglifyify(json))
+    .pipe(bl(doneWithMap))
+
+  from2([orig])
+    .pipe(uglifyify(json))
+    .pipe(bl(doneWithoutMap))
+
+  function doneWithMap(err, data) {
+    if (err) return t.ifError(err)
+    data = String(data)
+    t.notEqual(data, orig, 'should have changed')
+    t.notEqual(data.indexOf('//@'), -1, 'should have sourcemap')
+  }
+
+  function doneWithoutMap(err, data) {
+    if (err) return t.ifError(err)
+    data = String(data)
+    t.equal(data, orig, 'should have changed')
+    t.equal(data.indexOf('//@'), -1, 'should not have sourcemap')
+  }
+})
