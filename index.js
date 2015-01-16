@@ -18,6 +18,10 @@ function uglifyify(file, opts) {
   var exts = []
     .concat(opts.exts || [])
     .concat(opts.x || [])
+    .map(function(d) {
+      if (d.charAt(0) === '.') return d
+      return '.' + d
+    })
 
   if (
     /\.json$/.test(file) ||
