@@ -10,9 +10,14 @@
     "through": "~2.3.4",
     "uglify-js": "2.x.x"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "bl": "^0.9.3",
+    "tap-spec": "^2.1.2",
+    "tape": "^3.2.0",
+    "wrap-stream": "^2.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test | tap-spec"
   },
   "repository": {
     "type": "git",
