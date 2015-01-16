@@ -10,6 +10,12 @@ module.exports = uglifyify
 function uglifyify(file, opts) {
   opts = opts || {}
 
+  var debug = '_flags' in opts
+    ? opts._flags.debug
+    : true
+
+  delete opts._flags
+
   if (ignore(file, opts.ignore)) {
     return through()
   }
@@ -34,41 +40,45 @@ function uglifyify(file, opts) {
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
-    opts = extend({}, {
+    var matched = buffer.match(
+      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
+    )
+
+    debug = opts.sourcemap !== false && (debug || matched)
+    opts  = extend({}, {
       fromString: true
       , compress: true
       , mangle: true
       , filename: file
-      , sourceMaps: true
+      , sourceMaps: debug
     }, opts)
 
     if (typeof opts.compress === 'object') {
       delete opts.compress._
     }
 
-    var sourceMaps;
-    if(opts.sourceMaps) {
-      // Check if incoming source code already has source map comment.
-      // If so, send it in to ujs.minify as the inSourceMap parameter
-      sourceMaps = buffer.match(
-        /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}$/
-      )
+    if (debug) opts.outSourceMap = 'out.js.map'
 
-      opts.outSourceMap = 'out.js.map'
-      if(sourceMaps) {
-        opts.inSourceMap = sourceMaps && convert.fromJSON(
-          new Buffer(sourceMaps[1], 'base64').toString()
-        ).sourcemap
-      }
+    // Check if incoming source code already has source map comment.
+    // If so, send it in to ujs.minify as the inSourceMap parameter
+    if (debug && matched) {
+      opts.inSourceMap = convert.fromJSON(
+        new Buffer(matched[1], 'base64').toString()
+      ).sourcemap
     }
 
     var min = ujs.minify(buffer, opts)
+
+    // Uglify leaves a source map comment pointing back to "out.js.map",
+    // which we want to get rid of because it confuses browserify.
+    min.code = min.code.replace(/\/\/[#@] ?sourceMappingURL=out.js.map$/, '')
     this.queue(min.code)
 
-    if (min.map) {
+    if (min.map && min.map !== 'null') {
       var map = convert.fromJSON(min.map)
+
       map.setProperty('sources', [file])
-      map.setProperty('sourcesContent', sourceMaps
+      map.setProperty('sourcesContent', matched
         ? opts.inSourceMap.sourcesContent
         : [buffer]
       )

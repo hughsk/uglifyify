@@ -127,3 +127,46 @@ bundler.transform({
 
 bundler.bundle().pipe(process.stdout)
 ```
+
+## Source Maps
+
+Uglifyify supports source maps, so you can minify your code and still see the
+original source – this works especially well with a tool such as
+[exorcist](https://github.com/thlorenz/exorcist) when creating production
+builds.
+
+Source maps are enabled when:
+
+* You're using another transform, such as
+  [coffeeify](https://github.com/jnordberg/coffeeify), that inlines source maps.
+* You've passed the `--debug` flag (or `debug` option) to your browserify
+  bundle.
+
+Enabling `--debug` with browserify is easy:
+
+``` bash
+browserify -t uglifyify --debug index.js
+```
+``` javascript
+var bundler = browserify({ debug: true })
+
+bundler
+  .add('index.js')
+  .transform({ sourcemap: false }, 'uglifyify')
+  .bundle()
+  .pipe(process.stdout)
+```
+
+If you'd prefer them not to be included regardless, you can opt out
+using the `sourcemap` option:
+
+``` bash
+browserify -t [ uglifyify --no-sourcemap ] app.js
+```
+``` javascript
+var bundler = browserify('index.js')
+
+bundler.transform({ sourcemap: false }, 'uglifyify')
+  .bundle()
+  .pipe(process.stdout)
+```

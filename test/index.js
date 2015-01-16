@@ -1,12 +1,13 @@
-const convert   = require('convert-source-map')
-const wrap      = require('wrap-stream')
-const uglify    = require('uglify-js')
-const from2     = require('from2')
-const test      = require('tape')
-const path      = require('path')
-const uglifyify = require('../')
-const fs        = require('fs')
-const bl        = require('bl')
+const convert    = require('convert-source-map')
+const wrap       = require('wrap-stream')
+const browserify = require('browserify')
+const uglify     = require('uglify-js')
+const from2      = require('from2')
+const test       = require('tape')
+const path       = require('path')
+const uglifyify  = require('../')
+const fs         = require('fs')
+const bl         = require('bl')
 
 test('uglifyify: sanity check', function(t) {
   var src  = path.join(__dirname, 'fixture.js')
@@ -105,8 +106,8 @@ function closure() {
   return wrap('(function(){', '})()')
 }
 
-test('uglifyify: sourcemaps', function(t) {
-  t.plan(4)
+test.only('uglifyify: sourcemaps', function(t) {
+  t.plan(10)
 
   var src  = path.join(__dirname, 'fixture.js')
   var json = path.join(__dirname, 'fixture.json')
@@ -130,17 +131,45 @@ test('uglifyify: sourcemaps', function(t) {
     .pipe(uglifyify(json))
     .pipe(bl(doneWithoutMap))
 
+  browserify({ entries: [src], debug: true })
+    .transform(uglifyify)
+    .bundle()
+    .pipe(bl(doneWithMap))
+
+  browserify({ entries: [src], debug: false })
+    .transform(uglifyify)
+    .bundle()
+    .pipe(bl(doneWithoutDebug))
+
+  from2([mapped])
+    .pipe(uglifyify(json, { _flags: { debug: false }}))
+    .pipe(bl(doneWithMapAndNoDebug))
+
   function doneWithMap(err, data) {
     if (err) return t.ifError(err)
     data = String(data)
     t.notEqual(data, orig, 'should have changed')
-    t.notEqual(data.indexOf('//@'), -1, 'should have sourcemap')
+    t.equal(data.match(/\/\/[@#]/g).length, 1, 'should have sourcemap')
   }
 
   function doneWithoutMap(err, data) {
     if (err) return t.ifError(err)
     data = String(data)
-    t.equal(data, orig, 'should have changed')
-    t.equal(data.indexOf('//@'), -1, 'should not have sourcemap')
+    t.equal(data, orig, 'should not have changed')
+    t.equal(data.indexOf(/\/\/[@#]/g), -1, 'should not have sourcemap')
+  }
+
+  function doneWithoutDebug(err, data) {
+    if (err) return t.ifError(err)
+    data = String(data)
+    t.notEqual(data, orig, 'should have changed')
+    t.equal(data.indexOf(/\/\/[@#]/g), -1, 'should not have sourcemap')
+  }
+
+  function doneWithMapAndNoDebug(err, data) {
+    if (err) return t.ifError(err)
+    data = String(data)
+    t.notEqual(data, orig, 'should have changed')
+    t.equal(data.match(/\/\/[@#]/g).length, 1, 'should have sourcemap')
   }
 })
