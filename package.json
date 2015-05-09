@@ -16,10 +16,15 @@
     "from2": "^1.3.0",
     "tap-spec": "^2.1.2",
     "tape": "^3.2.0",
+    "test-peer-range": "^1.0.1",
     "wrap-stream": "^2.0.0"
   },
+  "peerDependencies": {
+    "browserify": ">= 5"
+  },
   "scripts": {
-    "test": "node test | tap-spec"
+    "test": "test-peer-range browserify",
+    "test-main": "node test | tap-spec"
   },
   "repository": {
     "type": "git",
