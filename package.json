@@ -4,9 +4,9 @@
   "description": "A browserify transform which minifies your code using UglifyJS2",
   "main": "index.js",
   "dependencies": {
-    "convert-source-map": "~0.2.3",
+    "convert-source-map": "~1.1.0",
     "extend": "^1.2.1",
-    "minimatch": "^0.3.0",
+    "minimatch": "^2.0.7",
     "through": "~2.3.4",
     "uglify-js": "2.x.x"
   },
