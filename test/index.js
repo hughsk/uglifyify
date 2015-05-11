@@ -25,6 +25,21 @@ test('uglifyify: sanity check', function(t) {
     }))
 })
 
+test.only('uglifyify: optional require', function(t) {
+  var src  = path.join(__dirname, 'foo.js')
+  var orig = fs.readFileSync(src, 'utf8')
+
+  browserify({ entries: [src], debug: false })
+    .transform(uglifyify)
+    .bundle()
+    .pipe(bl(function(err, data) {
+      if (err) return t.ifError(err)
+      data = String(data)
+      t.true(data.match(/{"\.\/bar":\d}/))
+      t.end()
+    }))
+})
+
 test('uglifyify: ignores json', function(t) {
   var src  = path.join(__dirname, 'fixture.js')
   var json = path.join(__dirname, 'fixture.json')
