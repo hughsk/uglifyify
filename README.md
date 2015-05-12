@@ -152,7 +152,7 @@ var bundler = browserify({ debug: true })
 
 bundler
   .add('index.js')
-  .transform({ sourcemap: false }, 'uglifyify')
+  .transform('uglifyify')
   .bundle()
   .pipe(process.stdout)
 ```
