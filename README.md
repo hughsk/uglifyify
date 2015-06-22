@@ -17,9 +17,15 @@ Ordinarily you'd be fine doing this:
 browserify index.js | uglifyjs -c > bundle.js
 ```
 
-But uglifyify gives you the benefit applying Uglify's "squeeze" transform
-*before* it's processed by Browserify, meaning you can remove dead code paths
-for conditional requires. Here's a contrived example:
+But uglifyify is able to yield smaller output by processing files individually
+instead of just the entire bundle. When using uglifyify you should generally
+**also** use Uglify, to achieve the smallest output. Uglifyify provides an
+additional optimization when used with Uglify, but does not provide all of the
+optimization that using Uglify on its own does, so it's not a replacement.
+
+Uglifyify gives you the benefit of applying Uglify's "squeeze" transform on each
+file *before* it's included in the bundle, meaning you can remove dead code
+paths for conditional requires. Here's a contrived example:
 
 ``` javascript
 if (true) {
