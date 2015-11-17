@@ -41,7 +41,7 @@ function uglifyify(file, opts) {
     buffer += chunk
   }, capture(function ready() {
     var matched = buffer.match(
-      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
+      /\/\/[#@] ?sourceMappingURL=data:application\/json.*;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
     )
 
     debug = opts.sourcemap !== false && (debug || matched)
@@ -75,16 +75,8 @@ function uglifyify(file, opts) {
     this.queue(min.code)
 
     if (min.map && min.map !== 'null') {
-      var map = convert.fromJSON(min.map)
-
-      map.setProperty('sources', [file])
-      map.setProperty('sourcesContent', matched
-        ? opts.inSourceMap.sourcesContent
-        : [buffer]
-      )
-
       this.queue('\n')
-      this.queue(map.toComment())
+      this.queue(convert.fromJSON(min.map).toComment())
     }
 
     this.queue(null)
