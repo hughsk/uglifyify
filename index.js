@@ -77,7 +77,7 @@ function uglifyify(file, opts) {
     if (min.map && min.map !== 'null') {
       var map = convert.fromJSON(min.map)
 
-      map.setProperty('sources', [file])
+      map.setProperty('sources', [path.basename(file)])
       map.setProperty('sourcesContent', matched
         ? opts.inSourceMap.sourcesContent
         : [buffer]
