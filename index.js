@@ -41,7 +41,8 @@ function uglifyify(file, opts) {
     buffer += chunk
   }, capture(function ready() {
     var matched = buffer.match(
-      /\/\/[#@] ?sourceMappingURL=data:application\/json;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
+      // match an inlined sourcemap with or without a charset definition
+      /\/\/[#@] ?sourceMappingURL=data:application\/json(?:;charset=utf-8)?;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
     )
 
     debug = opts.sourcemap !== false && (debug || matched)
