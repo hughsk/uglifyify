@@ -16,7 +16,7 @@ function uglifyify(file, opts) {
 
   delete opts._flags
 
-  if (ignore(file, opts.ignore)) {
+  if (ignore(file, opts.ignore, opts.dot)) {
     return through()
   }
 
@@ -102,13 +102,15 @@ function uglifyify(file, opts) {
   }
 }
 
-function ignore(file, list) {
+function ignore(file, list, dot) {
   if (!list) return
 
   list = Array.isArray(list) ? list : [list]
 
   return list.some(function(pattern) {
-    var match = minimatch(pattern)
+    var match = minimatch(pattern, {
+      dot: dot
+    })
     return match.match(file)
   })
 }
