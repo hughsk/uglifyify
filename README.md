@@ -134,6 +134,19 @@ bundler.transform({
 bundler.bundle().pipe(process.stdout)
 ```
 
+For any files/directories containing a dot, you can pass in the `dot: true`
+[option for minimatch](https://github.com/isaacs/minimatch#dot)
+
+```javascript
+bundler.transform({
+  global: true,
+  ignore: [
+    '**/node_modules/sql.js/**'
+  ],
+  dot: true
+}, 'uglifyify')
+```
+
 ## Source Maps
 
 Uglifyify supports source maps, so you can minify your code and still see the
