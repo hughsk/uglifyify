@@ -58,6 +58,10 @@ function uglifyify(file, opts) {
       delete opts.compress._
     }
 
+    if (typeof opts.output === 'object') {
+      delete opts.output._
+    }
+
     if (debug) opts.outSourceMap = 'out.js.map'
 
     // Check if incoming source code already has source map comment.
