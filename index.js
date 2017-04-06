@@ -10,9 +10,7 @@ module.exports = uglifyify
 function uglifyify(file, opts) {
   opts = opts || {}
 
-  var debug = '_flags' in opts
-    ? opts._flags.debug
-    : true
+  var debug = opts._flags && opts._flags.debug
 
   if (ignore(file, opts.ignore)) {
     return through()
