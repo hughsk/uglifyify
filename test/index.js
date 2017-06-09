@@ -1,7 +1,7 @@
 const convert    = require('convert-source-map')
 const wrap       = require('wrap-stream')
 const browserify = require('browserify')
-const uglify     = require('uglify-js')
+const uglify     = require('uglify-es')
 const from2      = require('from2')
 const test       = require('tape')
 const path       = require('path')
@@ -77,7 +77,7 @@ test('uglifyify: passes options to uglify', function(t) {
 
   fs.createReadStream(src)
     .pipe(closure())
-    .pipe(uglifyify(src, { compress: false, mangle: false }))
+    .pipe(uglifyify(src, { compress: { conditionals: false } }))
     .pipe(bl(buffered1))
 
   function buffered1(err, _buf1) {
@@ -113,8 +113,9 @@ test('uglifyify: sourcemaps', function(t) {
   var json = path.join(__dirname, 'fixture.json')
   var orig = fs.readFileSync(src, 'utf8')
   var min  = uglify.minify(orig, {
-    outSourceMap: 'out.js.map'
-    , fromString: true
+    sourceMap: {
+      url: 'out.js.map'
+    }
   })
 
   var map = convert.fromJSON(min.map)

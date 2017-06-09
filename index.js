@@ -2,7 +2,7 @@ var minimatch = require('minimatch').Minimatch
   , convert = require('convert-source-map')
   , through = require('through')
   , path = require('path')
-  , ujs = require('uglify-js')
+  , ujs = require('uglify-es')
   , extend = require('extend')
 
 module.exports = uglifyify
@@ -37,35 +37,38 @@ function uglifyify(file, opts) {
     return through()
   }
 
+  // remove exts before passing opts to uglify
+  delete opts.global
+  delete opts.exts
+  delete opts.x
+
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
     var matched = buffer.match(
-      // match an inlined sourcemap with or without a charset definition
+      // match an inlined sourceMap with or without a charset definition
       /\/\/[#@] ?sourceMappingURL=data:application\/json(?:;charset=utf-8)?;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
     )
 
-    debug = opts.sourcemap !== false && (debug || matched)
+    debug = opts.sourceMap !== false && (debug || matched)
     opts  = extend({}, {
-      fromString: true
-      , compress: true
-      , mangle: true
-      , filename: file
-      , sourceMaps: debug
+      sourceMap: {
+        filename: file
+      }
     }, opts)
 
     if (typeof opts.compress === 'object') {
       delete opts.compress._
     }
 
-    if (debug) opts.outSourceMap = 'out.js.map'
+    if (debug) opts.sourceMap.url = 'out.js.map'
 
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
     if (debug && matched) {
-      opts.inSourceMap = convert.fromJSON(
+      opts.sourceMap.content = convert.fromJSON(
         new Buffer(matched[1], 'base64').toString()
-      ).sourcemap
+      ).sourceMap
     }
 
     var min = ujs.minify(buffer, opts)

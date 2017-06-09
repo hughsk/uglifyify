@@ -1,7 +1,7 @@
 # uglifyify
 
 A [Browserify](http://browserify.org) v2 transform which minifies your code
-using [UglifyJS2](https://github.com/mishoo/UglifyJS2).
+using [uglify-es](https://github.com/mishoo/UglifyJS2/tree/harmony).
 
 ## Installation
 
@@ -96,9 +96,7 @@ var fs = require('fs')
 
 var bundler = browserify(__dirname + '/index.js')
 
-bundler.transform({
-  global: true
-}, 'uglifyify')
+bundler.transform('uglifyify', { global: true  })
 
 bundler.bundle()
   .pipe(fs.createWriteStream(__dirname + '/bundle.js'))
@@ -123,13 +121,13 @@ browserify -g [ uglifyify --ignore '**/node_modules/weakmap/*' ] ./index.js
 ``` javascript
 var bundler = browserify('index.js')
 
-bundler.transform({
-    global: true
-  , ignore: [
+bundler.transform('uglifyify', {
+  global: true,
+  ignore: [
       '**/node_modules/weakmap/*'
     , '**/node_modules/async/*'
   ]
-}, 'uglifyify')
+})
 
 bundler.bundle().pipe(process.stdout)
 ```
@@ -172,7 +170,7 @@ browserify -t [ uglifyify --no-sourcemap ] app.js
 ``` javascript
 var bundler = browserify('index.js')
 
-bundler.transform({ sourcemap: false }, 'uglifyify')
+bundler.transform('uglifyify', { sourceMap: false })
   .bundle()
   .pipe(process.stdout)
 ```
