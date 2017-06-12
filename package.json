@@ -8,7 +8,7 @@
     "extend": "^1.2.1",
     "minimatch": "^3.0.2",
     "through": "~2.3.4",
-    "uglify-js": "2.x.x"
+    "uglify-es": "^3.0.15"
   },
   "devDependencies": {
     "bl": "^0.9.3",
