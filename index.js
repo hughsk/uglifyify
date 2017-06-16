@@ -68,7 +68,7 @@ function uglifyify(file, opts) {
     if (debug && matched) {
       opts.sourceMap.content = convert.fromJSON(
         new Buffer(matched[1], 'base64').toString()
-      ).sourceMap
+      ).sourcemap
     }
 
     var min = ujs.minify(buffer, opts)
@@ -83,7 +83,7 @@ function uglifyify(file, opts) {
 
       map.setProperty('sources', [path.basename(file)])
       map.setProperty('sourcesContent', matched
-        ? opts.inSourceMap.sourcesContent
+        ? opts.sourceMap.sourcesContent
         : [buffer]
       )
 
