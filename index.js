@@ -52,10 +52,15 @@ function uglifyify(file, opts) {
 
     debug = opts.sourceMap !== false && (debug || matched)
     opts  = extend({}, {
+      compress: true,
+      mangle: true,
       sourceMap: {
         filename: file
       }
     }, opts)
+
+    // map out command line options to uglify compatible ones
+    mapArgv(opts)
 
     if (typeof opts.compress === 'object') {
       delete opts.compress._
@@ -72,6 +77,8 @@ function uglifyify(file, opts) {
     }
 
     var min = ujs.minify(buffer, opts)
+    // we should catcch the min error if it comes back and end the stream
+    if (min.error) return this.emit('error', min.error.message)
 
     // Uglify leaves a source map comment pointing back to "out.js.map",
     // which we want to get rid of because it confuses browserify.
@@ -114,4 +121,34 @@ function ignore(file, list) {
     var match = minimatch(pattern)
     return match.match(file)
   })
+}
+
+// uglify-es doesn't allow for command line options in javascript api, this
+// remaps it
+function mapArgv (opts) {
+  if (opts.c) {
+    opts.compress = opts.c
+    delete opts.c
+  }
+  if (opts.m) {
+    opts.mangle = opts.m
+    delete opts.m
+  }
+  if (opts.p) {
+    opts.parse = opts.p
+    delete opts.p
+  }
+  if (opts.b) {
+    opts.beautify = opts.b
+    delete opts.b
+  }
+  if (opts.o) {
+    opts.output = opts.o
+    delete opts.o
+  }
+  if (opts.d) {
+    opts.define = opts.d
+    delete opts.d
+  }
+  delete opts._
 }
