@@ -14,8 +14,6 @@ function uglifyify(file, opts) {
     ? opts._flags.debug
     : true
 
-  delete opts._flags
-
   if (ignore(file, opts.ignore)) {
     return through()
   }
@@ -37,11 +35,6 @@ function uglifyify(file, opts) {
     return through()
   }
 
-  // remove exts before passing opts to uglify
-  delete opts.global
-  delete opts.exts
-  delete opts.x
-
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
@@ -51,27 +44,38 @@ function uglifyify(file, opts) {
     )
 
     debug = opts.sourceMap !== false && (debug || matched)
-    opts  = extend({}, {
+
+    var thisopts  = extend({}, {
       sourceMap: {
         filename: file
       }
     }, opts)
 
-    if (typeof opts.compress === 'object') {
-      delete opts.compress._
+    // remove exts before passing opts to uglify
+    delete thisopts.global
+    delete thisopts.exts
+    delete thisopts.x
+    delete thisopts._
+    delete thisopts._flags
+
+    if (typeof thisopts.compress === 'object') {
+      delete thisopts.compress._
     }
 
-    if (debug) opts.sourceMap.url = 'out.js.map'
+    if (debug) thisopts.sourceMap.url = 'out.js.map'
 
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
     if (debug && matched) {
-      opts.sourceMap.content = convert.fromJSON(
+      thisopts.sourceMap.content = convert.fromJSON(
         new Buffer(matched[1], 'base64').toString()
       ).sourcemap
     }
 
-    var min = ujs.minify(buffer, opts)
+    var min = ujs.minify(buffer, thisopts)
+
+    if (min.error)
+        throw min.error
 
     // Uglify leaves a source map comment pointing back to "out.js.map",
     // which we want to get rid of because it confuses browserify.
@@ -83,7 +87,7 @@ function uglifyify(file, opts) {
 
       map.setProperty('sources', [path.basename(file)])
       map.setProperty('sourcesContent', matched
-        ? opts.sourceMap.sourcesContent
+        ? thisopts.sourceMap.sourcesContent
         : [buffer]
       )
 
