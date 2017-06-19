@@ -33,16 +33,11 @@ function uglifyify(file, opts) {
     return through()
   }
 
-  // remove exts before passing opts to uglify
-  delete opts.global
-  delete opts.exts
-  delete opts.x
-
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
     debug = opts.sourceMap !== false && debug
-    opts  = extend({}, {
+    var _opts  = extend({}, {
       compress: true,
       mangle: true,
       sourceMap: {
@@ -53,21 +48,33 @@ function uglifyify(file, opts) {
     // map out command line options to uglify compatible ones
     mapArgv(opts)
 
-    if (typeof opts.compress === 'object') {
-      delete opts.compress._
+    // remove exts before passing opts to uglify
+    delete _opts.global
+    delete _opts.exts
+    delete _opts.x
+    delete _opts._
+    delete _opts._flags
+
+    if (typeof _opts.compress === 'object') {
+      delete _opts.compress._
     }
 
-    if (debug) opts.sourceMap.url = 'out.js.map'
+    if (debug) _opts.sourceMap.url = 'out.js.map'
 
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
     if (debug) {
-      opts.sourceMap.content = 'inline'
+      _opts.sourceMap.content = 'inline'
     }
 
-    var min = ujs.minify(buffer, opts)
+    var min = ujs.minify(buffer, _opts)
+
     // we should catcch the min error if it comes back and end the stream
-    if (min.error) return this.emit('error', min.error)
+    if (min.error) {
+      const err = min.error instanceof Error ? min.error : new Error(min.error.message)
+      // will be emitted by `capture()`
+      throw err
+    }
 
     // Uglify leaves a source map comment pointing back to "out.js.map",
     // which we want to get rid of because it confuses browserify.
