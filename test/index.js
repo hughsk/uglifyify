@@ -45,6 +45,7 @@ test('uglifyify: ignores json', function(t) {
 test('uglifyify: -t [ uglifyify --exts ]', function(t) {
   var src  = path.join(__dirname, 'fixture.js')
   var orig = fs.readFileSync(src, 'utf8')
+  var options = { exts: ['mkdn' ], x: ['.obj2'] };
 
   t.plan(5)
 
@@ -56,7 +57,7 @@ test('uglifyify: -t [ uglifyify --exts ]', function(t) {
 
   function check(name, ignored) {
     fs.createReadStream(src)
-      .pipe(uglifyify(name, { exts: ['mkdn' ], x: ['.obj2'] }))
+      .pipe(uglifyify(name, options))
       .pipe(bl(buffered))
 
     function buffered(err, data) {

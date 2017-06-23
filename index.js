@@ -8,7 +8,7 @@ var minimatch = require('minimatch').Minimatch
 module.exports = uglifyify
 
 function uglifyify(file, opts) {
-  opts = opts || {}
+  opts = extend(true, {}, opts);
 
   var debug = '_flags' in opts
     ? opts._flags.debug
