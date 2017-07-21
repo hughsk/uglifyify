@@ -126,6 +126,9 @@ function ignore(file, list) {
 // uglify-es doesn't allow for command line options in javascript api, this
 // remaps it
 function mapArgv (opts) {
+  if (opts._flags) {
+    delete opts._flags
+  }
   if (opts.c) {
     opts.compress = opts.c
     delete opts.c
