@@ -78,7 +78,7 @@ function uglifyify(file, opts) {
 
     var min = ujs.minify(buffer, opts)
     // we should catcch the min error if it comes back and end the stream
-    if (min.error) return this.emit('error', min.error.message)
+    if (min.error) return this.emit('error', min.error)
 
     // Uglify leaves a source map comment pointing back to "out.js.map",
     // which we want to get rid of because it confuses browserify.
