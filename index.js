@@ -45,12 +45,7 @@ function uglifyify(file, opts) {
   return through(function write(chunk) {
     buffer += chunk
   }, capture(function ready() {
-    var matched = buffer.match(
-      // match an inlined sourceMap with or without a charset definition
-      /\/\/[#@] ?sourceMappingURL=data:application\/json(?:;charset=utf-8)?;base64,([a-zA-Z0-9+\/]+)={0,2}\n?$/
-    )
-
-    debug = opts.sourceMap !== false && (debug || matched)
+    debug = opts.sourceMap !== false && debug
     opts  = extend({}, {
       compress: true,
       mangle: true,
@@ -70,10 +65,8 @@ function uglifyify(file, opts) {
 
     // Check if incoming source code already has source map comment.
     // If so, send it in to ujs.minify as the inSourceMap parameter
-    if (debug && matched) {
-      opts.sourceMap.content = convert.fromJSON(
-        new Buffer(matched[1], 'base64').toString()
-      ).sourcemap
+    if (debug) {
+      opts.sourceMap.content = 'inline'
     }
 
     var min = ujs.minify(buffer, opts)
@@ -89,10 +82,6 @@ function uglifyify(file, opts) {
       var map = convert.fromJSON(min.map)
 
       map.setProperty('sources', [path.basename(file)])
-      map.setProperty('sourcesContent', matched
-        ? opts.sourceMap.sourcesContent
-        : [buffer]
-      )
 
       this.queue('\n')
       this.queue(map.toComment())
