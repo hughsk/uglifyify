@@ -14,8 +14,6 @@ function uglifyify(file, opts) {
     ? opts._flags.debug
     : true
 
-  delete opts._flags
-
   if (ignore(file, opts.ignore)) {
     return through()
   }
