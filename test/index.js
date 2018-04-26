@@ -174,3 +174,30 @@ test('uglifyify: sourcemaps', function(t) {
     t.equal(data.match(/\/\/[@#]/g).length, 1, 'should have sourcemap')
   }
 })
+
+test('uglifyify: transform is stable', function(t) {
+  t.plan(1)
+
+  var src  = path.join(__dirname, 'fixture.js')
+  var opts = {
+    _flags: {
+      debug: false
+    }
+  }
+
+  var tr1 = fs.createReadStream(src).pipe(uglifyify(src, opts))
+  var tr2 = fs.createReadStream(src).pipe(uglifyify(src, opts))
+
+  tr1.pipe(bl(function(err, data) {
+    if (err) return t.ifError(err)
+    var data1 = String(data)
+
+    tr2.pipe(bl(function(err, data) {
+      if (err) return t.ifError(err)
+      var data2 = String(data)
+
+      t.equal(data2, data1, 'repeated runs should be the same')
+      t.end()
+    }))
+  }))
+})
