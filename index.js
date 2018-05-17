@@ -2,7 +2,7 @@ var minimatch = require('minimatch').Minimatch
   , convert = require('convert-source-map')
   , through = require('through')
   , path = require('path')
-  , ujs = require('@fabiosantoscode/uglify-es')
+  , ujs = require('terser')
   , extend = require('extend')
 
 module.exports = uglifyify

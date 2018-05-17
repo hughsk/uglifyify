@@ -1,7 +1,7 @@
 # uglifyify
 
 A [Browserify](http://browserify.org) v2 transform which minifies your code
-using [uglify-es](https://github.com/mishoo/UglifyJS2/tree/harmony).
+using [terser](https://github.com/fabiosantoscode/terser) (a maintained fork of uglify-es).
 
 ## Installation
 
