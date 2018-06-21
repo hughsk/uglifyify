@@ -7,8 +7,8 @@
     "convert-source-map": "~1.1.0",
     "extend": "^1.2.1",
     "minimatch": "^3.0.2",
-    "through": "~2.3.4",
-    "uglify-es": "^3.0.15"
+    "terser": "^3.7.5",
+    "through": "~2.3.4"
   },
   "devDependencies": {
     "bl": "^0.9.3",
