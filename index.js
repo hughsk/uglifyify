@@ -3,12 +3,12 @@ var minimatch = require('minimatch').Minimatch
   , through = require('through')
   , path = require('path')
   , ujs = require('terser')
-  , extend = require('extend')
+  , xtend = require('xtend')
 
 module.exports = uglifyify
 
 function uglifyify(file, opts) {
-  opts = opts || {}
+  opts = xtend(opts || {})
 
   var debug = opts._flags && opts._flags.debug
 
@@ -42,7 +42,7 @@ function uglifyify(file, opts) {
     buffer += chunk
   }, capture(function ready() {
     debug = opts.sourceMap !== false && debug
-    opts  = extend({}, {
+    opts  = xtend({
       compress: true,
       mangle: true,
       sourceMap: {
