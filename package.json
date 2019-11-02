@@ -6,7 +6,7 @@
   "dependencies": {
     "convert-source-map": "~1.1.0",
     "minimatch": "^3.0.2",
-    "terser": "^3.7.5",
+    "terser": "3.16.1",
     "through": "~2.3.4",
     "xtend": "^4.0.1"
   },
